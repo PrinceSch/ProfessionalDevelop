@@ -1,4 +1,4 @@
-package com.princesch.profdevelop
+package com.princesch.profdevelop.presenter
 
 import io.reactivex.Observable
 

@@ -1,7 +1,7 @@
-package com.princesch.profdevelop
+package com.princesch.profdevelop.model.data
 
 import com.google.gson.annotations.SerializedName
 
-data class DataModel
+class DataModel
     (@field:SerializedName("text") val text: String?,
     @field:SerializedName("meanings") val meanings: List<Meanings>?)

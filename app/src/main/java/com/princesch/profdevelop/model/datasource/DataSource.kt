@@ -1,4 +1,4 @@
-package com.princesch.profdevelop
+package com.princesch.profdevelop.model.datasource
 
 import io.reactivex.Observable
 
