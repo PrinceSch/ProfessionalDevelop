@@ -3,15 +3,20 @@ package com.princesch.profdevelop.view.main
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.princesch.profdevelop.R
 import com.princesch.profdevelop.databinding.ActivityMainBinding
 import com.princesch.profdevelop.model.data.AppState
 import com.princesch.profdevelop.model.data.DataModel
-import com.princesch.profdevelop.presenter.Presenter
+import com.princesch.profdevelop.utils.isOnline
 import com.princesch.profdevelop.view.base.BaseActivity
+import com.princesch.profdevelop.viewmodel.MainViewModel
+import dagger.android.AndroidInjection
+import javax.inject.Inject
 
-class MainActivity : BaseActivity<AppState>() {
+class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -23,20 +28,32 @@ class MainActivity : BaseActivity<AppState>() {
             }
         }
 
-    override fun createPresenter(): Presenter<AppState, com.princesch.profdevelop.view.base.View> {
-        return MainPresenterImpl()
-    }
+    @Inject
+    internal lateinit var viewModelFactory: ViewModelProvider.Factory
+    override lateinit var model: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        model = viewModelFactory.create(MainViewModel::class.java)
+        model.subscribe().observe(this@MainActivity, Observer<AppState> { renderData(it) })
         binding.searchFab.setOnClickListener {
             val searchFragment = SearchFragment.newInstance()
             searchFragment.setOnSearchClickListener(object :
                 SearchFragment.OnSearchClickListener {
                 override fun onClick(searchWord: String) {
-                    presenter.getData(searchWord, true)
+                    isNetworkAvailable = isOnline(applicationContext)
+                    if (isNetworkAvailable) {
+                        model.getData(searchWord, isNetworkAvailable)
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            resources.getString(R.string.dialog_title_device_is_offline),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             })
             searchFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
@@ -82,7 +99,11 @@ class MainActivity : BaseActivity<AppState>() {
         showViewError()
         binding.errorTextview.text = error ?: getString(R.string.undefined_error)
         binding.reloadButton.setOnClickListener {
-            presenter.getData("hi", true)
+            Toast.makeText(
+                applicationContext,
+                resources.getString(R.string.dialog_title_device_is_offline),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
