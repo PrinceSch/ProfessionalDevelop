@@ -3,10 +3,8 @@ package com.princesch.profdevelop.view.base
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
-import com.princesch.profdevelop.R
 import com.princesch.profdevelop.model.data.AppState
-import com.princesch.profdevelop.presenter.Interactor
-import com.princesch.profdevelop.presenter.Presenter
+import com.princesch.profdevelop.viewmodel.Interactor
 import com.princesch.profdevelop.utils.isOnline
 import com.princesch.profdevelop.viewmodel.BaseViewModel
 
