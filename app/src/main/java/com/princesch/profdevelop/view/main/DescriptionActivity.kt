@@ -2,15 +2,13 @@ package com.princesch.profdevelop.view.main
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.princesch.profdevelop.R
 import com.princesch.profdevelop.databinding.ActivityDescriptionBinding
-import com.princesch.profdevelop.utils.AlertDialogFragment
-import com.princesch.profdevelop.utils.isOnline
+import com.princesch.utils.network.isOnline
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
@@ -59,7 +57,7 @@ class DescriptionActivity : AppCompatActivity() {
         if (isOnline(applicationContext)) {
             setData()
         } else {
-            AlertDialogFragment.newInstance(
+            com.princesch.utils.ui.AlertDialogFragment.newInstance(
                 getString(R.string.dialog_title_device_is_offline),
                 getString(R.string.dialog_message_device_is_offline)
             ).show(
@@ -90,60 +88,6 @@ class DescriptionActivity : AppCompatActivity() {
                 }
             })
     }
-
-//    private fun useGlideToLoadPhoto(imageView: ImageView, imageLink: String) {
-//        Glide.with(imageView)
-//            .load("https:$imageLink")
-//            .listener(object : RequestListener<Drawable> {
-//                override fun onLoadFailed(
-//                    e: GlideException?,
-//                    model: Any?,
-//                    target: Target<Drawable>?,
-//                    isFirstResource: Boolean
-//                ): Boolean {
-//                    stopRefreshAnimationIfNeeded()
-//                    imageView.setImageResource(R.drawable.ic_load_error_vector)
-//                    return false
-//                }
-//
-//                override fun onResourceReady(
-//                    resource: Drawable?,
-//                    model: Any?,
-//                    target: Target<Drawable>?,
-//                    dataSource: DataSource?,
-//                    isFirstResource: Boolean
-//                ): Boolean {
-//                    stopRefreshAnimationIfNeeded()
-//                    return false
-//                }
-//            })
-//            .apply(
-//                RequestOptions()
-//                    .placeholder(R.drawable.ic_no_photo_vector)
-//                    .centerCrop()
-//            )
-//            .into(imageView)
-//    }
-//
-//    private fun useCoilToLoadPhoto(imageView: ImageView, imageLink: String) {
-//        val request = LoadRequest.Builder(this)
-//            .data("https:$imageLink")
-//            .target(
-//                onStart = {},
-//                onSuccess = { result ->
-//                    imageView.setImageDrawable(result)
-//                },
-//                onError = {
-//                    imageView.setImageResource(R.drawable.ic_load_error_vector)
-//                }
-//            )
-//            .transformations(
-//                CircleCropTransformation(),
-//            )
-//            .build()
-//
-//        ImageLoader(this).execute(request)
-//    }
 
     companion object {
 

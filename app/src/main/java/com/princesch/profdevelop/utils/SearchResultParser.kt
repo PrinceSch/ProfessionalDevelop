@@ -1,38 +1,32 @@
 package com.princesch.profdevelop.utils
 
-import com.princesch.profdevelop.model.data.AppState
-import com.princesch.profdevelop.model.data.DataModel
-import com.princesch.profdevelop.model.data.Meanings
-import com.princesch.profdevelop.model.room.HistoryEntity
+import com.princesch.model.AppState
+import com.princesch.model.DataModel
+import com.princesch.model.Meanings
 
-
-fun parseOnlineSearchResults(appState: AppState): AppState {
-    return AppState.Success(mapResult(appState, true))
-}
-
-fun parseLocalSearchResults(appState: AppState): AppState {
-    return AppState.Success(mapResult(appState, false))
+fun parseOnlineSearchResults(data: AppState): AppState {
+    return AppState.Success(mapResult(data, true))
 }
 
 private fun mapResult(
-    appState: AppState,
+    data: AppState,
     isOnline: Boolean
 ): List<DataModel> {
     val newSearchResults = arrayListOf<DataModel>()
-    when (appState) {
+    when (data) {
         is AppState.Success -> {
-            getSuccessResultData(appState, isOnline, newSearchResults)
+            getSuccessResultData(data, isOnline, newSearchResults)
         }
     }
     return newSearchResults
 }
 
 private fun getSuccessResultData(
-    appState: AppState.Success,
+    data: AppState.Success,
     isOnline: Boolean,
     newDataModels: ArrayList<DataModel>
 ) {
-    val dataModels: List<DataModel> = appState.data as List<DataModel>
+    val dataModels: List<DataModel> = data.data as List<DataModel>
     if (dataModels.isNotEmpty()) {
         if (isOnline) {
             for (searchResult in dataModels) {
@@ -46,11 +40,14 @@ private fun getSuccessResultData(
     }
 }
 
-private fun parseOnlineResult(dataModel: DataModel, newDataModels: ArrayList<DataModel>) {
+private fun parseOnlineResult(
+    dataModel: DataModel,
+    newDataModels: ArrayList<DataModel>
+) {
     if (!dataModel.text.isNullOrBlank() && !dataModel.meanings.isNullOrEmpty()) {
         val newMeanings = arrayListOf<Meanings>()
-        for (meaning in dataModel.meanings) {
-            if (meaning.translation != null && !meaning.translation.translation.isNullOrBlank()) {
+        for (meaning in dataModel.meanings!!) {
+            if (meaning.translation != null && !meaning.translation!!.translation.isNullOrBlank()) {
                 newMeanings.add(Meanings(meaning.translation, meaning.imageUrl))
             }
         }
@@ -60,26 +57,14 @@ private fun parseOnlineResult(dataModel: DataModel, newDataModels: ArrayList<Dat
     }
 }
 
-fun mapHistoryEntityToSearchResult(list: List<HistoryEntity>): List<DataModel> {
-    val searchResult = ArrayList<DataModel>()
-    if (!list.isNullOrEmpty()) {
-        for (entity in list) {
-            searchResult.add(DataModel(entity.word, null))
+fun convertMeaningsToString(meanings: List<Meanings>): String {
+    var meaningsSeparatedByComma = String()
+    for ((index, meaning) in meanings.withIndex()) {
+        meaningsSeparatedByComma += if (index + 1 != meanings.size) {
+            String.format("%s%s", meaning.translation?.translation, ", ")
+        } else {
+            meaning.translation?.translation
         }
     }
-    return searchResult
-}
-
-fun convertDataModelSuccessToEntity(appState: AppState): HistoryEntity? {
-    return when (appState) {
-        is AppState.Success -> {
-            val searchResult = appState.data
-            if (searchResult.isNullOrEmpty() || searchResult[0].text.isNullOrEmpty()) {
-                null
-            } else {
-                HistoryEntity(searchResult[0].text!!, null)
-            }
-        }
-        else -> null
-    }
+    return meaningsSeparatedByComma
 }

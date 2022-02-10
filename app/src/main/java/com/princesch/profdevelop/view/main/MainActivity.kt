@@ -5,18 +5,16 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.princesch.core.BaseActivity
 import com.princesch.profdevelop.R
 import com.princesch.profdevelop.databinding.ActivityMainBinding
-import com.princesch.profdevelop.model.data.AppState
-import com.princesch.profdevelop.model.data.DataModel
 import com.princesch.profdevelop.utils.convertMeaningsToString
-import com.princesch.profdevelop.utils.isOnline
-import com.princesch.profdevelop.view.base.BaseActivity
-import com.princesch.profdevelop.view.history.HistoryActivity
+import com.princesch.historyscreen.HistoryActivity
+import com.princesch.model.AppState
 import com.princesch.profdevelop.viewmodel.MainViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.princesch.utils.network.isOnline
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
@@ -24,13 +22,13 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
     private val adapter: MainAdapter by lazy { MainAdapter(onListItemClickListener) }
     private val onListItemClickListener: MainAdapter.OnListItemClickListener =
         object : MainAdapter.OnListItemClickListener {
-            override fun onItemClick(data: DataModel) {
+            override fun onItemClick(data: com.princesch.model.DataModel) {
                 startActivity(
                     DescriptionActivity.getIntent(
                         this@MainActivity,
                         data.text!!,
                         convertMeaningsToString(data.meanings!!),
-                        data.meanings[0].imageUrl
+                        data.meanings!![0].imageUrl
                     )
                 )
             }
@@ -79,7 +77,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         binding.mainActivityRecyclerview.adapter = adapter
     }
 
-    override fun setDataToAdapter(data: List<DataModel>) {
+    override fun setDataToAdapter(data: List<com.princesch.model.DataModel>) {
         adapter.setData(data)
     }
 
