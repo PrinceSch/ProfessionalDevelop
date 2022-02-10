@@ -8,6 +8,7 @@ import com.princesch.profdevelop.R
 import com.princesch.profdevelop.databinding.ActivityMainBinding
 import com.princesch.profdevelop.model.data.AppState
 import com.princesch.profdevelop.model.data.DataModel
+import com.princesch.profdevelop.utils.convertMeaningsToString
 import com.princesch.profdevelop.utils.isOnline
 import com.princesch.profdevelop.view.base.BaseActivity
 import com.princesch.profdevelop.viewmodel.MainViewModel
@@ -20,7 +21,14 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
     private val onListItemClickListener: MainAdapter.OnListItemClickListener =
         object : MainAdapter.OnListItemClickListener {
             override fun onItemClick(data: DataModel) {
-                Toast.makeText(this@MainActivity, data.text, Toast.LENGTH_SHORT).show()
+                startActivity(
+                    DescriptionActivity.getIntent(
+                        this@MainActivity,
+                        data.text!!,
+                        convertMeaningsToString(data.meanings!!),
+                        data.meanings[0].imageUrl
+                    )
+                )
             }
         }
 
@@ -77,9 +85,11 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
                 showViewWorking()
                 val data = appState.data
                 if (data.isNullOrEmpty()) {
-                    Toast.makeText(applicationContext,
+                    Toast.makeText(
+                        applicationContext,
                         getString(R.string.empty_server_response_on_success),
-                        Toast.LENGTH_LONG).show()
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
                     adapter?.setData(data)
                 }
